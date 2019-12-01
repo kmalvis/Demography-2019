@@ -1,0 +1,101 @@
+---
+title: "NHIS final project"
+author: "KADGB"
+date: "11/16/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+## The haven package was utilized in R to view the stata dataset. The variables were then examined and changed to factor variables if appropriate.
+
+```{r library}
+library(haven)
+```
+## The data were downloaded and cleaned in Stata before being imported to R for further analysis.The  cleaning  process  in  Stata  entailed  examining  the  variables,  renaming  them when appropriate, and removing missing data. A restricted dataset, including 42 out ofthe possible 132 variables was then imported into R.
+```{r import data}
+NHIS_Use <- read_dta("D:/SOC 8802/NHIS_Use.dta")
+```
+
+## Below is a view of the data in a table with 42 of the variables. 
+```{r}
+NHIS_Use
+```
+#view colums and rows
+```{r}
+dim(NHIS_Use)
+str(NHIS_Use)
+```
+
+#View variable SPEDEI
+```{r}
+summary(NHIS_Use$spedEI)
+```
+
+#View variable NOMED
+```{r}
+summary(NHIS_Use$nomed)
+levels(NHIS_Use$nomed)
+```
+
+#view variable numsedei
+```{r}
+summary(NHIS_Use$numSEDEI)
+levels(NHIS_Use$numSEDEI)
+table(NHIS_Use$numSEDEI)
+print(class(NHIS_Use$numSEDEI))
+```
+#Mean number of children receiving special education services or Early Intervention services in a household
+```{r}
+mean.SEDEI <- mean(NHIS_Use$numSEDEI, na.rm = TRUE)
+mean.SEDEI
+```
+
+#Mean Number of children per household
+```{r}
+mean.kids <-mean(NHIS_Use$numKids)
+mean.kids
+```
+
+#Mean number of children needing help with ADL
+```{r}
+mean.ADL <-mean(NHIS_Use$numADL)
+mean.ADL
+```
+
+#Mean number of family members not seeking medical help due to costs
+```{r}
+mean.nomed <-mean(NHIS_Use$numNomed)
+mean.nomed
+```
+
+## Below are the correlations between number of family members who have delayed medical care on the one hand and number of kids, number of family members who require help with daily living skills (ADLs), and number of kids receiving special education/early intervention on the other hand. We used data from the 2018 NHIS. The correlations between the variables were examined using the Pearson correlation coefficient ("pearson method" command in R).
+
+
+## Pearson correlation coefficients were obtained for numNomed (number of times medical care was delayed) with each of the other three variables [numADL (number of family members requring help with daily living skills), numSEDEI (number of children in special education or EI), numkids (number of total children in the family)]
+
+## We wanted to know if delaying medical care was strongly correlated with the number of kids in the family, number of children in the family who need help with ADL, and number of children receiving special education/early intervention. The rationale for correlating numNoMed with numSEDEI, numADL, and numKids is that families with more children, and chidren with disabilities face greater hardships not only in financial terms, but are also more likely to have time constrains due to caring for multiple children and/or children with disabilities. 
+
+```{r}
+cor(NHIS_Use$numNomed, NHIS_Use$numKids, method ="pearson")
+cor(NHIS_Use$numNomed, NHIS_Use$numADL, method = "pearson")
+cor(NHIS_Use$numNomed, NHIS_Use$numSEDEI, use= "complete.obs", method ="pearson")
+```
+## Plots of the correlations are generated below to aid with visual interpretation.
+
+
+```{r pressure, echo=FALSE}
+plot(NHIS_Use$numNomed, NHIS_Use$numKids, main= "Delayed Medical Treatment - Number of Kids", xlab="Delay Medical", ylab = "Number Kids", las =1)
+plot(NHIS_Use$numNomed, NHIS_Use$numADL, main="Medical Treatment/ADL", xlab="Delay Medical", ylab= "Number of Family/ADL Help", las=1)
+plot(NHIS_Use$numNomed, NHIS_Use$numSEDEI, main="Medical Treatment/Kids in EI or SE", xlab = "Delay Medical", ylab= "Number oc Kids in EI/SE", las =1)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
